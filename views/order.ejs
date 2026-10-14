@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Orders</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f0f4f8; display: flex; justify-content: center; padding-top: 30px; margin: 0; }
+        .container { background: white; padding: 25px; border-radius: 8px; width: 85%; max-width: 950px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e9ecef; padding-bottom: 12px; margin-bottom: 15px; }
+        .user-info { font-size: 14px; color: #555; }
+        .badge { background-color: #28a745; color: white; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+        .badge-admin { background-color: #dc3545; }
+        .btn-logout { background-color: #6c757d; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-size: 13px; font-weight: bold; margin-left: 10px; }
+        .btn-logout:hover { background-color: #5a6268; }
+        h1 { color: #007bff; margin: 10px 0 20px 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background-color: #007bff; color: white; padding: 12px; }
+        td { padding: 10px; border-bottom: 1px solid #ddd; }
+        .btn-create { background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 20px; font-weight: bold; }
+        .btn-create:hover { background-color: #0056b3; }
+        .btn-update { background-color: #17a2b8; color: white; border: none; padding: 5px 10px; border-radius: 3px; text-decoration: none; font-size: 12px; }
+        .btn-delete { background-color: #ffc107; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; }
+        .btn-delete:hover { background-color: #e0a800; }
+        .role-notice { color: #888; font-size: 12px; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- User Info & Logout Bar -->
+        <div class="header-bar">
+            <div class="user-info">
+                Xin chào: <strong><%= user ? user.username : 'Khách' %></strong> 
+                <span class="badge <%= user && user.role === 'admin' ? 'badge-admin' : '' %>">
+                    <%= user ? user.role : '' %>
+                </span>
+            </div>
+            <div>
+                <a href="/logout" class="btn-logout">Đăng Xuất</a>
+            </div>
+        </div>
+
+        <h1>Product Orders</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Customer Name</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Order Date</th>
+                    <th>Total Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (orders && orders.length > 0) { %>
+                    <% orders.forEach(order => { %>
+                        <tr>
+                            <td><%= order.customerName %></td>
+                            <td><%= order.productName %></td>
+                            <td><%= order.quantity %></td>
+                            <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
+                            <td><%= order.totalPrice.toLocaleString() %> VND</td>
+                            <td>
+                                <% if (user && user.role === 'admin') { %>
+                                    <a href="/orders/update/<%= order._id %>" class="btn-update">Update</a>
+                                    <form action="/orders/delete/<%= order._id %>" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn-delete" onclick="return confirm('Are you sure?')">Delete</button>
+                                    </form>
+                                <% } else { %>
+                                    <span class="role-notice">Admin only</span>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="6" style="padding: 20px; color: #777;">Chưa có đơn hàng nào.</td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+        <a href="/orders/create" class="btn-create">Create New Order</a>
+    </div>
+</body>
+</html>
